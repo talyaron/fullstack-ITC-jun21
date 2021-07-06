@@ -37,7 +37,7 @@ class MyName extends Component {
     render() {
         return (
             <div className='myName' onClick={() => this.handleCounter()}>
-                <p>{this.state.name}, and clicked this {this.state.counter} </p>
+                <p>{this.state.name}, and clicked this props:{this.props.counter} state:{this.state.counter}</p>
                 <input type='text' placeholder='name' onKeyUp={this.handleName} />
             </div>
         )
