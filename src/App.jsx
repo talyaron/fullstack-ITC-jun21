@@ -1,59 +1,88 @@
 import { Component } from 'react';
+import axios from 'axios';
 import logo from './logo.svg';
 import './App.css';
+
 
 //components
 import MyName from './components/MyName/MyName';
 
-const students = ['Michael S.','Yonatan', 'David', "Sol"]
+let students = []
 class App extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
       counter: 0,
-      isGreen:true
+      isGreen: true,
+      students: []
     }
     this.handleAdd = this.handleAdd.bind(this);
     this.handleToggleGreen = this.handleToggleGreen.bind(this);
     this.getStudents = this.getStudents.bind(this);
+    this.handleSendStudent = this.handleSendStudent.bind(this)
   }
 
-  handleAdd(){
-    this.setState({counter:this.state.counter+1})
+  handleAdd() {
+    this.setState({ counter: this.state.counter + 1 })
   }
-  handleToggleGreen(){
-    this.setState({isGreen:!this.state.isGreen})
+  handleToggleGreen() {
+    this.setState({ isGreen: !this.state.isGreen })
   }
 
-  getStudents(){
+  getStudents() {
     try {
       fetch('https://test-api-fs.herokuapp.com/api/getStudents')
-      .then(r=>r.json())
-      .then(students=>{
-        console.log(students)
-      })
+        .then(r => r.json())
+        .then(students => {
+          console.log(students);
+          this.setState({ students });
+        })
     } catch (error) {
       console.error(error)
     }
   }
+
+  async handleSendStudent(ev) {
+    try {
+      ev.preventDefault();
+      let { id, name } = ev.target.elements;
+      id = id.value;
+      name = name.value;
+      console.log(id, name)
+      let msg = await axios.post('https://test-api-fs.herokuapp.com/api/addStudent', { id, name })
+      console.log(msg)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  componentDidMount(){
+    this.getStudents()
+  }
+
   render() {
     return (
 
       <div className="App">
         <header className="App-header">
+          <form onSubmit={this.handleSendStudent}>
+            <input type='text' placeholder='name' name='name' />
+            <input type='text' placeholder='ID' name='id' />
+            <button type='submit'>ADD</button>
+          </form>
           <img src={logo} className="App-logo" alt="logo" />
           <button onClick={this.handleAdd} counter={this.state.counter}>ADD</button>
-          <button onClick={this.handleToggleGreen} >{this.state.isGreen?"Make Red":"Make Green"}</button>
+          <button onClick={this.handleToggleGreen} >{this.state.isGreen ? "Make Red" : "Make Green"}</button>
           <button onClick={this.getStudents} >GET STUDENTS</button>
-          <div className={this.state.isGreen?"green":'red'}>
+          <div className={this.state.isGreen ? "green" : 'red'}>
             Learn React
           </div>
-          {students.map((student,i)=>{
-            return <MyName key={i} name={student} counter={this.state.counter}/>
+          {this.state.students.map((student, i) => {
+            return <MyName key={student._id} name={student.name} counter={this.state.counter} />
           })}
-          
-          
+
+
         </header>
       </div>
     )

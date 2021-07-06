@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+
+
 import './MyName.css';
 let x = 100;
 class MyName extends Component {
